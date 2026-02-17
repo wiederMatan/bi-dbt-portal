@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<!--
+  מרכז למידה אינטראקטיבי - BI DBT Portal
+  קובץ זה נוצר כדי ללמד את מבנה הפרויקט דרך הקוד עצמו.
+  הוא מציג הסברים על: API, Reverse Proxy, תרשימי זרימה, ו-CLI.
+-->
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מרכז למידה - BI DBT Portal</title>
+
+    <!-- Tailwind CSS מ-CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Mermaid.js לתרשימי זרימה -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+    <!-- הגדרות Tailwind מותאמות לעברית -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        /* גופן ברירת מחדל בעברית */
+                        sans: ['Segoe UI', 'Tahoma', 'Arial', 'sans-serif'],
+                    },
+                    colors: {
+                        /* צבעי הפרויקט */
+                        primary: '#667eea',
+                        secondary: '#764ba2',
+                        dark: '#1e293b',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* עיצוב בסיסי נוסף */
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+        }
+
+        /* עיצוב בלוקי קוד */
+        pre code {
+            direction: ltr;
+            text-align: left;
+            display: block;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* אנימציית גלילה חלקה */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* עיצוב הסרגל הצדדי בגלילה */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        /* אנימציית הופעה */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* כפתור פעיל בניווט */
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        /* עיצוב Mermaid */
+        .mermaid {
+            direction: ltr;
+            text-align: center;
+        }
+
+        /* הדגשת שורות קוד */
+        .highlight-line {
+            background: rgba(102, 126, 234, 0.15);
+            display: block;
+            padding: 0 8px;
+            margin: 0 -8px;
+            border-right: 3px solid #667eea;
+        }
+
+        /* כרטיסיות (Tabs) */
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            right: 50%;
+            transform: translateX(50%);
+            background: #1e293b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- ========================================== -->
+    <!-- סרגל ניווט עליון                           -->
+    <!-- ========================================== -->
+    <nav class="bg-gradient-to-l from-primary to-secondary text-white sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <h1 class="text-xl font-bold">
+                &#128218; מרכז למידה - BI DBT Portal
+            </h1>
+            <!-- קישורי ניווט -->
+            <div class="hidden md:flex gap-2 text-sm">
+                <a href="#api" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">API</a>
+                <a href="#proxy" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">Proxy</a>
+                <a href="#flow" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">תרשים זרימה</a>
+                <a href="#cli" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">CLI</a>
+                <a href="#docker" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">Docker</a>
+            </div>
+            <!-- תפריט מובייל -->
+            <button id="mobileMenuBtn" class="md:hidden p-2 hover:bg-white/20 rounded-lg">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+            </button>
+        </div>
+        <!-- תפריט מובייל נפתח -->
+        <div id="mobileMenu" class="hidden md:hidden px-4 pb-3 space-y-1 text-sm">
+            <a href="#api" class="block px-3 py-2 hover:bg-white/20 rounded-lg">API</a>
+            <a href="#proxy" class="block px-3 py-2 hover:bg-white/20 rounded-lg">Proxy</a>
+            <a href="#flow" class="block px-3 py-2 hover:bg-white/20 rounded-lg">תרשים זרימה</a>
+            <a href="#cli" class="block px-3 py-2 hover:bg-white/20 rounded-lg">CLI</a>
+            <a href="#docker" class="block px-3 py-2 hover:bg-white/20 rounded-lg">Docker</a>
+        </div>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- כותרת ראשית עם סקירה כללית                 -->
+    <!-- ========================================== -->
+    <header class="bg-gradient-to-l from-primary to-secondary text-white py-16">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold mb-4">למד את הפרויקט שלך מבפנים</h2>
+            <p class="text-lg opacity-90 mb-8">
+                מרכז למידה אינטראקטיבי שמסביר את הארכיטקטורה של BI DBT Portal
+                <br>דרך הקוד האמיתי של הפרויקט
+            </p>
+            <!-- סטטיסטיקות מהירות -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
+                <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                    <div class="text-3xl font-bold">3</div>
+                    <div class="text-sm opacity-80">שכבות ארכיטקטורה</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                    <div class="text-3xl font-bold">2</div>
+                    <div class="text-sm opacity-80">API Endpoints</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                    <div class="text-3xl font-bold">2</div>
+                    <div class="text-sm opacity-80">Docker Services</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur rounded-xl p-4">
+                    <div class="text-3xl font-bold">3</div>
+                    <div class="text-sm opacity-80">פורטים פעילים</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-10 space-y-12">
+
+        <!-- ========================================== -->
+        <!-- חלק 1: מה זה API?                         -->
+        <!-- ========================================== -->
+        <section id="api" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <!-- כותרת הסקשן -->
+                <div class="bg-green-500 text-white px-6 py-4">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <span class="bg-white/20 rounded-lg p-2">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                        </span>
+                        מה זה API?
+                    </h2>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- הסבר כללי -->
+                    <div class="bg-blue-50 border-r-4 border-blue-500 p-5 rounded-lg">
+                        <h3 class="font-bold text-blue-800 text-lg mb-2">הסבר כללי</h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            <strong>API</strong> (Application Programming Interface) הוא ממשק שמאפשר לתוכנות שונות לתקשר זו עם זו.
+                            במקרה של הפרויקט שלך, ה-API הוא הגשר בין הממשק הויזואלי (HTML בדפדפן) לבין השרת (Flask) שמעבד את הנתונים.
+                        </p>
+                        <p class="text-gray-700 mt-3 leading-relaxed">
+                            כאשר משתמש לוחץ על כפתור או שולח שאלה בצ'אט, הדפדפן שולח <strong>בקשת HTTP</strong> (כמו GET או POST)
+                            לכתובת מסוימת (Endpoint), והשרת מחזיר תשובה בפורמט <strong>JSON</strong>.
+                        </p>
+                    </div>
+
+                    <!-- Endpoint 1: GET /api/projects -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="bg-gray-50 px-5 py-3 flex items-center gap-3 border-b">
+                            <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">GET</span>
+                            <code class="text-gray-800 font-mono text-sm">/api/projects</code>
+                            <span class="text-gray-500 text-sm mr-auto">&#8212; קבלת רשימת פרויקטי DBT</span>
+                        </div>
+                        <div class="p-5 space-y-4">
+                            <p class="text-gray-700">
+                                ה-Endpoint הזה סורק את תיקיית הפרויקט ומחפש תיקיות שמתחילות ב-<code class="bg-gray-100 px-1 rounded">bi_*</code>.
+                                לכל תיקייה שמכילה קובץ <code class="bg-gray-100 px-1 rounded">manifest.json</code>, הוא חולץ מטא-דאטה
+                                ומחזיר רשימה ממוינת של פרויקטים.
+                            </p>
+
+                            <!-- קוד מהפרויקט -->
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">backend/app.py</span>
+                                    <span class="text-xs text-gray-400">&#8212; קוד מהפרויקט האמיתי (לפי תיעוד)</span>
+                                </div>
+                                <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code># נקודת קצה לקבלת רשימת הפרויקטים
+# סורק את PORTAL_DIR ומחפש תיקיות עם manifest.json
+@app.route('/api/projects', methods=['GET'])
+def get_projects():
+    projects = []
+    portal_dir = os.environ.get('PORTAL_DIR', '/app/portal')
+
+    for dir_name in os.listdir(portal_dir):
+        dir_path = os.path.join(portal_dir, dir_name)
+        manifest_path = os.path.join(dir_path, 'manifest.json')
+
+        # בודק אם קיים manifest.json בתיקייה
+        if os.path.isdir(dir_path) and os.path.exists(manifest_path):
+            with open(manifest_path, 'r') as f:
+                manifest = json.load(f)
+            # חילוץ מטא-דאטה ומספר מודלים
+            model_count = len(manifest.get('nodes', {}))
+            projects.append({
+                'name': dir_name,
+                'models': model_count
+            })
+
+    # מחזיר את הרשימה ממוינת
+    return jsonify(sorted(projects, key=lambda x: x['name']))</code></pre>
+                            </div>
+
+                            <!-- דוגמת תגובה -->
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 mb-2">דוגמת תגובה (Response):</p>
+                                <pre class="bg-gray-900 text-yellow-300 rounded-lg p-4 overflow-x-auto"><code>[
+  { "name": "bi_sales", "models": 42 },
+  { "name": "bi_hr", "models": 28 },
+  { "name": "bi_finance", "models": 65 }
+]</code></pre>
+                            </div>
+
+                            <!-- איך הפרונטאנד קורא ל-API -->
+                            <div class="bg-purple-50 border-r-4 border-purple-400 p-4 rounded-lg">
+                                <p class="text-sm font-semibold text-purple-800 mb-2">איך הפרונטאנד קורא ל-API הזה?</p>
+                                <pre class="bg-gray-900 text-blue-300 rounded-lg p-4 overflow-x-auto"><code>// מתוך analyze-modern.js - טעינת רשימת פרויקטים
+// הדפדפן שולח בקשת GET לשרת ומעדכן את ה-select
+async loadProjects() {
+    const response = await fetch('/api/projects');
+    const projects = await response.json();
+    projects.forEach(project => {
+        const option = document.createElement('option');
+        option.value = project.name;
+        option.textContent = project.name;
+        projectSelect.appendChild(option);
+    });
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Endpoint 2: POST /api/chat -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="bg-gray-50 px-5 py-3 flex items-center gap-3 border-b">
+                            <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">POST</span>
+                            <code class="text-gray-800 font-mono text-sm">/api/chat</code>
+                            <span class="text-gray-500 text-sm mr-auto">&#8212; שליחת שאלה ל-AI</span>
+                        </div>
+                        <div class="p-5 space-y-4">
+                            <p class="text-gray-700">
+                                ה-Endpoint הזה מקבל שם פרויקט, הודעה, והיסטוריית שיחה.
+                                הוא טוען את ה-<code class="bg-gray-100 px-1 rounded">manifest.json</code> של הפרויקט,
+                                בונה הקשר (context) עם כללי אבטחה, ושולח הכל ל-Kiro CLI דרך פרוקסי HTTP.
+                            </p>
+
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">backend/app.py</span>
+                                </div>
+                                <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code># נקודת קצה לצ'אט AI - מעבד שאלות על מודלי DBT
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    data = request.get_json()
+    project_name = data.get('project_name')
+    message = data.get('message')
+    history = data.get('conversation_history', [])
+
+    # טעינת manifest.json של הפרויקט
+    manifest_path = os.path.join(PORTAL_DIR, project_name, 'manifest.json')
+    with open(manifest_path, 'r') as f:
+        manifest = json.load(f)
+
+    # בדיקת אבטחה - חסימת יצירת קבצים
+    blocked_keywords = ['create', 'write', 'save', 'mkdir', 'touch']
+    if any(kw in message.lower() for kw in blocked_keywords):
+        return jsonify({'error': 'File creation is not allowed'}), 403
+
+    # אם ה-manifest גדול מ-100KB, יוצרים סיכום
+    manifest_str = json.dumps(manifest)
+    if len(manifest_str) > 100000:
+        manifest_data = create_manifest_summary(manifest)
+    else:
+        manifest_data = manifest_str
+
+    # בניית ה-prompt ושליחה ל-Kiro Proxy
+    context = build_context(manifest_data, message, history)
+    response = requests.post(
+        'http://172.27.0.1:5002/kiro',
+        json={'prompt': context},
+        timeout=60
+    )
+
+    # ניקוי התשובה מקודי ANSI והחזרה
+    clean_response = clean_ansi(response.json()['response'])
+    return jsonify({'response': clean_response})</code></pre>
+                            </div>
+
+                            <!-- מבנה הבקשה -->
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-600 mb-2">מבנה הבקשה (Request Body):</p>
+                                    <pre class="bg-gray-900 text-yellow-300 rounded-lg p-4 overflow-x-auto"><code>{
+  "project_name": "bi_sales",
+  "message": "מה הלוגיקה של fact_sales?",
+  "conversation_history": [
+    { "role": "user", "content": "..." },
+    { "role": "assistant", "content": "..." }
+  ]
+}</code></pre>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-600 mb-2">מבנה התגובה (Response):</p>
+                                    <pre class="bg-gray-900 text-yellow-300 rounded-lg p-4 overflow-x-auto"><code>{
+  "response": "המודל fact_sales
+  מבצע JOIN בין טבלאות
+  ההזמנות והמוצרים, ומחשב
+  סיכומי מכירות יומיים..."
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- סיכום API -->
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-5">
+                        <h4 class="font-bold text-green-800 mb-2">&#9989; לסיכום</h4>
+                        <p class="text-gray-700 text-sm">
+                            ה-API של הפרויקט שלך פשוט ומאובטח: שתי נקודות קצה שמספקות את כל הפונקציונליות.
+                            <code class="bg-green-100 px-1 rounded">GET /api/projects</code> לגילוי פרויקטים,
+                            ו-<code class="bg-green-100 px-1 rounded">POST /api/chat</code> לאינטראקציה עם AI.
+                            כל התקשורת מתבצעת בפורמט JSON.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- חלק 2: מה זה Reverse Proxy?               -->
+        <!-- ========================================== -->
+        <section id="proxy" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-orange-500 text-white px-6 py-4">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <span class="bg-white/20 rounded-lg p-2">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </span>
+                        מה זה Reverse Proxy? (ותפקיד Nginx בפרויקט)
+                    </h2>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- הסבר כללי -->
+                    <div class="bg-orange-50 border-r-4 border-orange-500 p-5 rounded-lg">
+                        <h3 class="font-bold text-orange-800 text-lg mb-2">הסבר כללי</h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            <strong>Reverse Proxy</strong> הוא שרת ביניים שיושב בין המשתמש לבין השרת האמיתי.
+                            הוא מקבל את כל הבקשות מהמשתמש, ולפי הנתיב (URL) מחליט לאן להעביר אותן:
+                        </p>
+                        <ul class="mt-3 space-y-2 text-gray-700">
+                            <li class="flex items-start gap-2">
+                                <span class="text-orange-500 mt-1">&#9654;</span>
+                                <span>בקשה לדף HTML? &#8594; Nginx מגיש אותו ישירות מהדיסק (מהיר מאוד)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-orange-500 mt-1">&#9654;</span>
+                                <span>בקשה ל-API? &#8594; Nginx מעביר אותה ל-Flask (שרת הפייתון)</span>
+                            </li>
+                        </ul>
+                        <p class="text-gray-700 mt-3 leading-relaxed">
+                            היתרונות: <strong>ביצועים</strong> (Nginx מהיר מאוד בהגשת קבצים סטטיים),
+                            <strong>אבטחה</strong> (Flask לא חשוף ישירות לאינטרנט),
+                            ו<strong>גמישות</strong> (אפשר להוסיף דחיסה, Cache, ו-Headers בלי לשנות קוד).
+                        </p>
+                    </div>
+
+                    <!-- תרשים ויזואלי של Proxy -->
+                    <div class="bg-gray-50 rounded-xl p-6 text-center">
+                        <h4 class="font-bold text-gray-700 mb-4">איך Nginx עובד בפרויקט שלך:</h4>
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-4 text-sm">
+                            <!-- דפדפן -->
+                            <div class="bg-blue-100 border-2 border-blue-400 rounded-xl p-4 w-40">
+                                <div class="text-2xl mb-1">&#128187;</div>
+                                <div class="font-bold text-blue-800">דפדפן</div>
+                                <div class="text-xs text-blue-600">localhost:5000</div>
+                            </div>
+                            <!-- חץ -->
+                            <div class="text-gray-400 text-2xl transform md:rotate-0 rotate-90">&#10132;</div>
+                            <!-- Nginx -->
+                            <div class="bg-orange-100 border-2 border-orange-400 rounded-xl p-4 w-48">
+                                <div class="text-2xl mb-1">&#9881;&#65039;</div>
+                                <div class="font-bold text-orange-800">Nginx</div>
+                                <div class="text-xs text-orange-600">Reverse Proxy</div>
+                                <div class="mt-2 text-xs space-y-1">
+                                    <div class="bg-white rounded px-2 py-0.5">HTML/CSS/JS &#8594; ישיר</div>
+                                    <div class="bg-white rounded px-2 py-0.5">/api/* &#8594; Flask</div>
+                                </div>
+                            </div>
+                            <!-- חץ -->
+                            <div class="text-gray-400 text-2xl transform md:rotate-0 rotate-90">&#10132;</div>
+                            <!-- Flask -->
+                            <div class="bg-green-100 border-2 border-green-400 rounded-xl p-4 w-40">
+                                <div class="text-2xl mb-1">&#128013;</div>
+                                <div class="font-bold text-green-800">Flask</div>
+                                <div class="text-xs text-green-600">port 5001</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- קוד Nginx האמיתי -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-3">הקוד מהפרויקט שלך: <code class="text-sm bg-gray-100 px-2 py-0.5 rounded">nginx.conf</code></h3>
+
+                        <!-- הגשת קבצים סטטיים -->
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2 font-semibold">1. הגשת קבצים סטטיים (HTML):</p>
+                            <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code>server {
+    listen 80;                              <span class="text-gray-500"># מאזין על פורט 80</span>
+    server_name localhost;
+    root /opt/bitnami/nginx/html;           <span class="text-gray-500"># תיקיית הקבצים הסטטיים</span>
+    index index.html;                       <span class="text-gray-500"># דף ברירת מחדל</span>
+
+    <span class="text-yellow-400"># הגשת דפי HTML - בלי Cache כדי שתמיד יהיה עדכני</span>
+    location ~* \.html$ {
+        expires -1;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    <span class="text-yellow-400"># ניתוב ברירת מחדל - אם הקובץ לא נמצא, מגיש index.html</span>
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}</code></pre>
+                        </div>
+
+                        <!-- העברת API -->
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2 font-semibold">2. העברת בקשות API ל-Flask (ה-Reverse Proxy עצמו):</p>
+                            <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code><span class="text-yellow-400"># זה הקוד המרכזי! כל בקשה שמתחילה ב-/api/ מועברת ל-Flask</span>
+location /api/ {
+    proxy_pass http://flask-backend:5001;   <span class="text-gray-500"># העברה לשירות Flask ב-Docker</span>
+    proxy_set_header Host $host;            <span class="text-gray-500"># שמירת ה-Host המקורי</span>
+    proxy_set_header X-Real-IP $remote_addr;<span class="text-gray-500"># העברת IP האמיתי של המשתמש</span>
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_read_timeout 120s;                <span class="text-gray-500"># המתנה עד 120 שניות לתשובה</span>
+}</code></pre>
+                            <div class="bg-yellow-50 border-r-4 border-yellow-400 p-3 mt-3 rounded-lg">
+                                <p class="text-sm text-gray-700">
+                                    <strong>&#128161; שים לב:</strong> הכתובת <code class="bg-yellow-100 px-1 rounded">flask-backend</code>
+                                    היא שם ה-service ב-Docker Compose. Docker יוצר רשת פנימית שבה כל service יכול לפנות לאחר לפי שמו.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- אבטחה -->
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2 font-semibold">3. Headers אבטחה:</p>
+                            <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code><span class="text-yellow-400"># Headers שמגנים מפני התקפות נפוצות</span>
+add_header X-Frame-Options "SAMEORIGIN" always;       <span class="text-gray-500"># מניעת הטמעה ב-iframe זר</span>
+add_header X-Content-Type-Options "nosniff" always;   <span class="text-gray-500"># מניעת ניחוש סוג קובץ</span>
+add_header X-XSS-Protection "1; mode=block" always;   <span class="text-gray-500"># הגנה מפני XSS</span></code></pre>
+                        </div>
+
+                        <!-- Cache וביצועים -->
+                        <div>
+                            <p class="text-sm text-gray-600 mb-2 font-semibold">4. Cache ודחיסה לביצועים:</p>
+                            <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code><span class="text-yellow-400"># דחיסת Gzip - מקטין את גודל התעבורה</span>
+gzip on;
+gzip_vary on;
+gzip_min_length 1024;           <span class="text-gray-500"># דוחס רק קבצים מעל 1KB</span>
+gzip_types text/plain text/css text/xml text/javascript
+    application/javascript application/xml+rss application/json;
+
+<span class="text-yellow-400"># Cache לנכסים סטטיים - שנה שלמה!</span>
+location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+    expires 1y;
+    add_header Cache-Control "public, immutable";
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- קונפיגורציית Bitnami -->
+                    <div class="bg-gray-50 rounded-xl p-5">
+                        <h4 class="font-bold text-gray-700 mb-3">
+                            קונפיגורציה נוספת: <code class="text-sm bg-gray-200 px-2 py-0.5 rounded">bitnami-server.conf</code>
+                        </h4>
+                        <p class="text-sm text-gray-600 mb-3">
+                            קובץ זה משמש בסביבת Bitnami ומפנה ל-IP קשיח במקום לשם ה-Docker service:
+                        </p>
+                        <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code>server {
+    listen 8080;                <span class="text-gray-500"># פורט שונה - 8080 במקום 80</span>
+    server_name _;
+    root /usr/share/nginx/html;
+
+    location /api/ {
+        proxy_pass http://10.100.110.44:5001;  <span class="text-gray-500"># IP קשיח של שרת Flask</span>
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 120s;
+    }
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- חלק 3: תרשים זרימה (Mermaid.js)          -->
+        <!-- ========================================== -->
+        <section id="flow" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-purple-600 text-white px-6 py-4">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <span class="bg-white/20 rounded-lg p-2">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                        </span>
+                        תרשים זרימה - מסע של בקשה במערכת
+                    </h2>
+                </div>
+
+                <div class="p-6 space-y-8">
+                    <!-- הסבר -->
+                    <div class="bg-purple-50 border-r-4 border-purple-500 p-5 rounded-lg">
+                        <p class="text-gray-700 leading-relaxed">
+                            התרשימים הבאים מראים את המסלול שעוברת כל בקשה במערכת.
+                            התרשים הראשון מציג את הזרימה הכללית, והשני מתמקד בתהליך שליחת שאלה ל-AI.
+                        </p>
+                    </div>
+
+                    <!-- תרשים 1: זרימה כללית -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4">1. זרימה כללית של בקשה</h3>
+                        <div class="bg-gray-50 rounded-xl p-6 overflow-x-auto">
+                            <div class="mermaid">
+graph LR
+    A["&#127760; דפדפן<br/>localhost:5000"] -->|"HTTP Request"| B["&#9881;&#65039; Nginx<br/>Reverse Proxy"]
+    B -->|"/*.html, /assets/*"| C["&#128196; קבצים סטטיים<br/>HTML / CSS / JS"]
+    B -->|"/api/*"| D["&#128013; Flask Backend<br/>port 5001"]
+    D -->|"/api/projects"| E["&#128193; סריקת תיקיות<br/>bi_* directories"]
+    D -->|"/api/chat"| F["&#129302; Kiro Proxy<br/>port 5002"]
+    F -->|"kiro-cli chat"| G["&#9729;&#65039; Kiro CLI<br/>AI Engine"]
+
+    style A fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style B fill:#fed7aa,stroke:#f97316,stroke-width:2px
+    style C fill:#e5e7eb,stroke:#6b7280,stroke-width:2px
+    style D fill:#bbf7d0,stroke:#22c55e,stroke-width:2px
+    style E fill:#bbf7d0,stroke:#22c55e,stroke-width:1px
+    style F fill:#e9d5ff,stroke:#a855f7,stroke-width:2px
+    style G fill:#e9d5ff,stroke:#a855f7,stroke-width:1px
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- תרשים 2: זרימת AI Chat -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4">2. זרימת שאלה ל-AI (תהליך מפורט)</h3>
+                        <div class="bg-gray-50 rounded-xl p-6 overflow-x-auto">
+                            <div class="mermaid">
+sequenceDiagram
+    participant U as &#128100; משתמש
+    participant FE as &#127760; Frontend<br/>(analyze.html)
+    participant NX as &#9881;&#65039; Nginx
+    participant FL as &#128013; Flask
+    participant KP as &#129302; Kiro Proxy
+    participant AI as &#9729;&#65039; Kiro CLI
+
+    U->>FE: כותב שאלה ולוחץ שלח
+    FE->>NX: POST /api/chat<br/>{project, message, history}
+    NX->>FL: proxy_pass<br/>http://flask-backend:5001
+    FL->>FL: טוען manifest.json
+    FL->>FL: בודק אבטחה<br/>(חסימת יצירת קבצים)
+    FL->>FL: בונה context<br/>עם הקשר ופרומפט
+    FL->>KP: POST http://172.27.0.1:5002/kiro
+    KP->>AI: kiro-cli chat --non-interactive
+    AI-->>KP: תשובת AI (טקסט)
+    KP-->>FL: JSON response
+    FL->>FL: ניקוי ANSI codes
+    FL-->>NX: JSON {response: "..."}
+    NX-->>FE: HTTP 200
+    FE->>FE: עיבוד Markdown
+    FE-->>U: הצגת התשובה בצ'אט
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- תרשים 3: ארכיטקטורת Docker -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4">3. ארכיטקטורת Docker Containers</h3>
+                        <div class="bg-gray-50 rounded-xl p-6 overflow-x-auto">
+                            <div class="mermaid">
+graph TB
+    subgraph HOST["&#128187; Host Machine"]
+        KP["&#129302; Kiro Proxy<br/>port 5002<br/>kiro_sessions/kiro_proxy.py"]
+        KC["&#128273; Kiro CLI Binary<br/>backend/kiro-cli"]
+        AWS["&#9729;&#65039; AWS Credentials<br/>/home/bi_linux/.aws"]
+        KIRO_CONF["&#128273; Kiro Config<br/>/home/bi_linux/.kiro"]
+    end
+
+    subgraph DOCKER["&#128051; Docker Network"]
+        NX["&#9881;&#65039; bi-dbt-portal<br/>Nginx<br/>5000:8080"]
+        FL["&#128013; flask-backend<br/>Flask API<br/>5001:5001"]
+    end
+
+    NX -->|"depends_on"| FL
+    FL -.->|"HTTP POST"| KP
+    KP -->|"executes"| KC
+    FL -.->|"mount :ro"| AWS
+    FL -.->|"mount :ro"| KIRO_CONF
+
+    style HOST fill:#f0f9ff,stroke:#0ea5e9,stroke-width:2px
+    style DOCKER fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
+    style NX fill:#fed7aa,stroke:#f97316,stroke-width:2px
+    style FL fill:#bbf7d0,stroke:#22c55e,stroke-width:2px
+    style KP fill:#e9d5ff,stroke:#a855f7,stroke-width:2px
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- חלק 4: מדריך CLI                          -->
+        <!-- ========================================== -->
+        <section id="cli" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-cyan-600 text-white px-6 py-4">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <span class="bg-white/20 rounded-lg p-2">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+                            </svg>
+                        </span>
+                        מדריך CLI - פקודות שימושיות
+                    </h2>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- Kiro CLI -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-cyan-100 text-cyan-700 rounded-lg flex items-center justify-center text-sm font-bold">K</span>
+                            Kiro CLI - מנוע ה-AI
+                        </h3>
+
+                        <div class="space-y-3">
+                            <!-- פקודה 1 -->
+                            <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="bg-gray-50 px-4 py-2 border-b">
+                                    <code class="text-cyan-700 font-bold">kiro-cli login --use-device-flow</code>
+                                </div>
+                                <div class="p-4">
+                                    <p class="text-gray-700 text-sm">
+                                        התחברות ל-Kiro דרך AWS SSO. פותח קישור בדפדפן לאימות.
+                                        הפקודה שומרת את ה-credentials ב-<code class="bg-gray-100 px-1 rounded">/home/bi_linux/.kiro</code>.
+                                    </p>
+                                    <pre class="bg-gray-900 text-green-400 rounded-lg p-3 mt-3 text-sm overflow-x-auto"><code>$ kiro-cli login --use-device-flow
+# Start URL: &lt;your-aws-sso-url&gt;
+# Region: Ireland
+# הדפדפן ייפתח לאימות - יש לאשר</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- פקודה 2 -->
+                            <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="bg-gray-50 px-4 py-2 border-b">
+                                    <code class="text-cyan-700 font-bold">kiro-cli chat --non-interactive</code>
+                                </div>
+                                <div class="p-4">
+                                    <p class="text-gray-700 text-sm">
+                                        שליחת prompt ל-AI במצב לא-אינטראקטיבי (ללא TTY).
+                                        זו הפקודה שה-Kiro Proxy מפעיל כאשר מגיעה שאלה מהמשתמש.
+                                    </p>
+                                    <pre class="bg-gray-900 text-green-400 rounded-lg p-3 mt-3 text-sm overflow-x-auto"><code># כך Kiro Proxy מפעיל את הפקודה (מתוך kiro_proxy.py)
+import subprocess
+
+result = subprocess.run(
+    ['kiro-cli', 'chat', '--non-interactive'],
+    input=prompt_text,        # הפרומפט שנשלח מ-Flask
+    capture_output=True,
+    text=True,
+    timeout=60                # timeout של 60 שניות
+)
+response = result.stdout     # התשובה מה-AI</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Docker Compose Commands -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-sm font-bold">D</span>
+                            Docker Compose - ניהול שירותים
+                        </h3>
+
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <!-- הפעלה -->
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-green-500 text-lg">&#9654;</span>
+                                    <code class="font-bold text-sm">docker-compose up --build -d</code>
+                                </div>
+                                <p class="text-gray-600 text-sm">
+                                    בנייה והפעלת כל השירותים ברקע.
+                                    <br>זו הפקודה ש-<code class="bg-gray-100 px-1 rounded">start.sh</code> מריץ.
+                                </p>
+                            </div>
+
+                            <!-- עצירה -->
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-red-500 text-lg">&#9632;</span>
+                                    <code class="font-bold text-sm">docker-compose down</code>
+                                </div>
+                                <p class="text-gray-600 text-sm">
+                                    עצירת כל השירותים והסרת ה-containers.
+                                </p>
+                            </div>
+
+                            <!-- לוגים -->
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-blue-500 text-lg">&#128196;</span>
+                                    <code class="font-bold text-sm">docker-compose logs -f</code>
+                                </div>
+                                <p class="text-gray-600 text-sm">
+                                    צפייה בלוגים בזמן אמת מכל השירותים.
+                                    <br><code class="bg-gray-100 px-1 rounded text-xs">-f</code> = follow (עוקב אחרי שורות חדשות).
+                                </p>
+                            </div>
+
+                            <!-- סטטוס -->
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-purple-500 text-lg">&#128270;</span>
+                                    <code class="font-bold text-sm">docker-compose ps</code>
+                                </div>
+                                <p class="text-gray-600 text-sm">
+                                    הצגת סטטוס כל השירותים (פעיל / עצור / שגיאה).
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- start.sh -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-green-100 text-green-700 rounded-lg flex items-center justify-center text-sm font-bold">S</span>
+                            start.sh - סקריפט הפעלה מהירה
+                        </h3>
+
+                        <div class="bg-gray-50 rounded-xl p-5">
+                            <p class="text-gray-700 text-sm mb-3">
+                                הסקריפט <code class="bg-gray-200 px-1 rounded">start.sh</code> מבצע בדיקות ומפעיל את כל המערכת בפקודה אחת:
+                            </p>
+                            <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code>#!/bin/bash
+# סקריפט הפעלה מהירה - מתוך start.sh בפרויקט
+
+# שלב 1: בדיקה ש-Docker רץ
+if ! docker info > /dev/null 2>&1; then
+    echo "Docker is not running. Please start Docker first."
+    exit 1
+fi
+
+# שלב 2: בדיקה ש-docker-compose מותקן
+if ! command -v docker-compose &> /dev/null; then
+    echo "docker-compose not found. Please install docker-compose."
+    exit 1
+fi
+
+# שלב 3: בנייה והפעלה
+docker-compose up --build -d
+
+# שלב 4: הצגת כתובות הגישה
+echo "Portal URL: http://localhost:5000/home"
+echo "Analyzer URL: http://localhost:5000/analyze.html"</code></pre>
+
+                            <!-- הפעלה -->
+                            <div class="bg-cyan-50 border-r-4 border-cyan-400 p-3 mt-4 rounded-lg">
+                                <p class="text-sm text-gray-700">
+                                    <strong>להפעלה:</strong>
+                                    <code class="bg-cyan-100 px-2 py-0.5 rounded mr-2">chmod +x start.sh && ./start.sh</code>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- npm scripts -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-yellow-100 text-yellow-700 rounded-lg flex items-center justify-center text-sm font-bold">N</span>
+                            npm Scripts - פקודות פיתוח
+                        </h3>
+
+                        <div class="bg-gray-50 rounded-xl p-5">
+                            <p class="text-gray-700 text-sm mb-3">
+                                מוגדרים ב-<code class="bg-gray-200 px-1 rounded">package.json</code>:
+                            </p>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-3 bg-white rounded-lg p-3 border">
+                                    <code class="text-sm font-bold text-yellow-700 whitespace-nowrap">npm start</code>
+                                    <span class="text-gray-400">&#8594;</span>
+                                    <span class="text-sm text-gray-600">מעדכן את קונפיגורציית הכרטיסים (cards-config.json)</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-white rounded-lg p-3 border">
+                                    <code class="text-sm font-bold text-yellow-700 whitespace-nowrap">npm run dev</code>
+                                    <span class="text-gray-400">&#8594;</span>
+                                    <span class="text-sm text-gray-600">מפעיל שרת HTTP פשוט בפורט 8000 (לפיתוח)</span>
+                                </div>
+                                <div class="flex items-center gap-3 bg-white rounded-lg p-3 border">
+                                    <code class="text-sm font-bold text-yellow-700 whitespace-nowrap">npm run build</code>
+                                    <span class="text-gray-400">&#8594;</span>
+                                    <span class="text-sm text-gray-600">בנייה - מעדכן כרטיסים לפני deploy</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- חלק 5: ארכיטקטורת Docker                  -->
+        <!-- ========================================== -->
+        <section id="docker" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-blue-600 text-white px-6 py-4">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <span class="bg-white/20 rounded-lg p-2">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/>
+                            </svg>
+                        </span>
+                        ארכיטקטורת Docker
+                    </h2>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- docker-compose.yml -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-3">
+                            <code class="text-sm bg-gray-100 px-2 py-0.5 rounded">docker-compose.yml</code> - תזמור השירותים
+                        </h3>
+                        <p class="text-gray-700 text-sm mb-4">
+                            קובץ זה מגדיר את שני ה-containers של הפרויקט ואת הקשרים ביניהם:
+                        </p>
+                        <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code>services:
+  <span class="text-yellow-400"># שירות 1: Flask Backend - שרת ה-API</span>
+  flask-backend:
+    build:
+      context: ./backend          <span class="text-gray-500"># בנייה מתיקיית backend</span>
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"               <span class="text-gray-500"># חשיפת פורט 5001</span>
+    volumes:
+      - .:/app/portal:ro          <span class="text-gray-500"># קבצי הפרויקט (קריאה בלבד)</span>
+      - /home/bi_linux/.aws:/root/.aws:ro     <span class="text-gray-500"># AWS credentials</span>
+      - /home/bi_linux/.kiro:/root/.kiro:ro   <span class="text-gray-500"># Kiro credentials</span>
+    environment:
+      - FLASK_ENV=production
+      - HOME=/root
+      - PORTAL_DIR=/app/portal    <span class="text-gray-500"># תיקיית חיפוש פרויקטי DBT</span>
+    user: root
+    restart: unless-stopped       <span class="text-gray-500"># הפעלה מחדש אוטומטית</span>
+    container_name: bi-dbt-flask-backend
+
+  <span class="text-yellow-400"># שירות 2: Nginx - שרת הווב</span>
+  bi-dbt-portal:
+    build: .                      <span class="text-gray-500"># בנייה מהתיקייה הראשית</span>
+    ports:
+      - "5000:8080"               <span class="text-gray-500"># פורט 5000 חיצוני -> 8080 פנימי</span>
+    volumes:
+      - .:/opt/bitnami/nginx/html:ro          <span class="text-gray-500"># קבצים סטטיים</span>
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro <span class="text-gray-500"># קונפיגורציית Nginx</span>
+    depends_on:
+      - flask-backend             <span class="text-gray-500"># ממתין ש-Flask יעלה קודם</span>
+    restart: unless-stopped
+    container_name: bi-dbt-portal</code></pre>
+                    </div>
+
+                    <!-- Dockerfile -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-3">
+                            <code class="text-sm bg-gray-100 px-2 py-0.5 rounded">Dockerfile</code> - בניית image ל-Nginx
+                        </h3>
+                        <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code><span class="text-yellow-400"># שימוש ב-Nginx Alpine - גרסה קלה ומאובטחת</span>
+FROM nginx:1.27-alpine
+
+<span class="text-yellow-400"># העתקת קונפיגורציית Nginx</span>
+COPY nginx.conf /etc/nginx/nginx.conf
+
+<span class="text-yellow-400"># העתקת כל הקבצים הסטטיים (HTML, CSS, JS)</span>
+COPY . /usr/share/nginx/html/
+
+<span class="text-yellow-400"># העתקת קונפיגורציית Bitnami</span>
+COPY bitnami-server.conf /opt/bitnami/nginx/conf/server_blocks/portal.conf
+
+<span class="text-yellow-400"># חשיפת פורט 80</span>
+EXPOSE 80
+
+<span class="text-yellow-400"># הפעלת Nginx בחזית (לא כ-daemon)</span>
+CMD ["nginx", "-g", "daemon off;"]</code></pre>
+                    </div>
+
+                    <!-- טבלת פורטים -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-3">מפת פורטים</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr class="bg-blue-600 text-white">
+                                        <th class="p-3 text-right rounded-tr-lg">שירות</th>
+                                        <th class="p-3 text-right">פורט חיצוני</th>
+                                        <th class="p-3 text-right">פורט פנימי</th>
+                                        <th class="p-3 text-right">סביבה</th>
+                                        <th class="p-3 text-right rounded-tl-lg">תפקיד</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="p-3 font-bold text-orange-600">Nginx</td>
+                                        <td class="p-3"><code>5000</code></td>
+                                        <td class="p-3"><code>8080</code></td>
+                                        <td class="p-3">Docker</td>
+                                        <td class="p-3">שרת ווב + Reverse Proxy</td>
+                                    </tr>
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="p-3 font-bold text-green-600">Flask</td>
+                                        <td class="p-3"><code>5001</code></td>
+                                        <td class="p-3"><code>5001</code></td>
+                                        <td class="p-3">Docker</td>
+                                        <td class="p-3">שרת API (פרויקטים + צ'אט)</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3 font-bold text-purple-600">Kiro Proxy</td>
+                                        <td class="p-3"><code>5002</code></td>
+                                        <td class="p-3"><code>5002</code></td>
+                                        <td class="p-3">Host</td>
+                                        <td class="p-3">פרוקסי HTTP ל-Kiro CLI</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Volume Mounts -->
+                    <div class="bg-blue-50 rounded-xl p-5">
+                        <h4 class="font-bold text-blue-800 mb-3">Volume Mounts - מה מחובר למה?</h4>
+                        <p class="text-gray-700 text-sm mb-3">
+                            <strong>Volumes</strong> מאפשרים ל-container לגשת לקבצים מהמכונה המארחת.
+                            <br>הסימן <code class="bg-blue-100 px-1 rounded">:ro</code> (read-only) מונע מה-container לשנות את הקבצים.
+                        </p>
+                        <div class="space-y-2">
+                            <div class="bg-white rounded-lg p-3 border border-blue-200 flex items-center gap-3">
+                                <code class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded whitespace-nowrap">.:/app/portal:ro</code>
+                                <span class="text-gray-400">&#8594;</span>
+                                <span class="text-sm text-gray-600">קבצי הפרויקט זמינים ל-Flask לסריקת תיקיות DBT</span>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-blue-200 flex items-center gap-3">
+                                <code class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded whitespace-nowrap">.aws:/root/.aws:ro</code>
+                                <span class="text-gray-400">&#8594;</span>
+                                <span class="text-sm text-gray-600">הרשאות AWS לגישה לשירותי ענן</span>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-blue-200 flex items-center gap-3">
+                                <code class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded whitespace-nowrap">.kiro:/root/.kiro:ro</code>
+                                <span class="text-gray-400">&#8594;</span>
+                                <span class="text-sm text-gray-600">הרשאות Kiro CLI לשימוש במנוע ה-AI</span>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-blue-200 flex items-center gap-3">
+                                <code class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded whitespace-nowrap">nginx.conf:/etc/nginx/nginx.conf:ro</code>
+                                <span class="text-gray-400">&#8594;</span>
+                                <span class="text-sm text-gray-600">קונפיגורציית Nginx מועברת ל-container</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- חלק 6: מילון מונחים                       -->
+        <!-- ========================================== -->
+        <section id="glossary" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-gray-700 text-white px-6 py-4">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <span class="bg-white/20 rounded-lg p-2">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                        </span>
+                        מילון מונחים
+                    </h2>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-3">
+                        <div class="bg-gray-50 rounded-lg p-4 border-r-4 border-gray-300">
+                            <h4 class="font-bold text-gray-800">API (Application Programming Interface)</h4>
+                            <p class="text-sm text-gray-600 mt-1">ממשק תכנות יישומים - מאפשר לתוכנות לתקשר ביניהן דרך כתובות URL</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border-r-4 border-gray-300">
+                            <h4 class="font-bold text-gray-800">Endpoint</h4>
+                            <p class="text-sm text-gray-600 mt-1">כתובת URL ספציפית שמטפלת בבקשה מסוימת, למשל <code>/api/projects</code></p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border-r-4 border-gray-300">
+                            <h4 class="font-bold text-gray-800">Reverse Proxy</h4>
+                            <p class="text-sm text-gray-600 mt-1">שרת ביניים שמקבל בקשות ומעביר אותן לשרת הנכון - Nginx בפרויקט שלך</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border-r-4 border-gray-300">
+                            <h4 class="font-bold text-gray-800">Docker Container</h4>
+                            <p class="text-sm text-gray-600 mt-1">יחידת הרצה מבודדת שמכילה את כל מה שנדרש להפעלת שירות</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border-r-4 border-gray-300">
+                            <h4 class="font-bold text-gray-800">Volume Mount</h4>
+                            <p class="text-sm text-gray-600 mt-1">חיבור תיקייה מהמכונה המארחת לתוך container, לשיתוף קבצים</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border-r-4 border-gray-300">
+                            <h4 class="font-bold text-gray-800">DBT (Data Build Tool)</h4>
+                            <p class="text-sm text-gray-600 mt-1">כלי לניהול טרנספורמציות נתונים ב-SQL עם תיעוד אוטומטי</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border-r-4 border-gray-300">
+                            <h4 class="font-bold text-gray-800">Manifest.json</h4>
+                            <p class="text-sm text-gray-600 mt-1">קובץ שנוצר ע"י DBT ומכיל מידע על כל המודלים, התלויות והמטא-דאטה</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4 border-r-4 border-gray-300">
+                            <h4 class="font-bold text-gray-800">CORS</h4>
+                            <p class="text-sm text-gray-600 mt-1">מנגנון אבטחה בדפדפן שמגביל בקשות בין דומיינים שונים</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========================================== -->
+    <!-- Footer                                     -->
+    <!-- ========================================== -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <p class="text-gray-400 text-sm">
+                מרכז למידה - BI DBT Portal | נוצר אוטומטית מניתוח הקוד של הפרויקט
+            </p>
+            <p class="text-gray-500 text-xs mt-2">
+                Justice Ministry BI Team - Internal Use Only
+            </p>
+        </div>
+    </footer>
+
+    <!-- ========================================== -->
+    <!-- JavaScript - אינטראקטיביות               -->
+    <!-- ========================================== -->
+    <script>
+        // אתחול Mermaid.js - מנוע תרשימי הזרימה
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true,
+                showSequenceNumbers: true
+            }
+        });
+
+        // תפריט מובייל - פתיחה/סגירה
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // סגירת תפריט מובייל בלחיצה על קישור
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // הדגשת קישור ניווט פעיל בזמן גלילה
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (window.scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // אנימציית הופעה בגלילה (Intersection Observer)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // הפעלת אנימציה על כל הסקשנים
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
