@@ -1,0 +1,30 @@
+services:
+  flask-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    volumes:
+      - .:/app/portal:ro
+      - /home/bi_linux/.aws:/root/.aws:ro
+      - /home/bi_linux/.kiro:/root/.kiro:ro
+    environment:
+      - FLASK_ENV=production
+      - HOME=/root
+      - PORTAL_DIR=/app/portal
+    user: root
+    restart: unless-stopped
+    container_name: bi-dbt-flask-backend
+
+  bi-dbt-portal:
+    build: .
+    ports:
+      - "5000:8080"
+    volumes:
+      - .:/opt/bitnami/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - flask-backend
+    restart: unless-stopped
+    container_name: bi-dbt-portal

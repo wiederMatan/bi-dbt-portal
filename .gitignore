@@ -1,0 +1,19 @@
+# DBT project directories
+bi_*/
+
+# Kiro sessions
+kiro_sessions/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+
+# Kiro CLI binary
+backend/kiro-cli
+
+# Logs
+*.log

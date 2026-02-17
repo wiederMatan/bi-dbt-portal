@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מנתח מודלים DBT</title>
+    <link rel="stylesheet" href="assets/css/analyze-modern.css?v=2">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="new-chat-btn" id="newChatBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                שיחה חדשה
+            </button>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="project-selector-sidebar">
+                <label>בחר פרויקט</label>
+                <select id="projectSelect" class="project-select">
+                    <option value="">טוען פרויקטים...</option>
+                </select>
+            </div>
+            
+            <div class="recent-chats">
+                <h3>פרויקטים אחרונים</h3>
+                <div id="recentList" class="recent-list">
+                    <!-- Recent projects will be added here -->
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <main class="main-chat">
+        <!-- Header -->
+        <header class="chat-header">
+            <button class="menu-toggle" id="menuToggle">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12h18M3 6h18M3 18h18"/>
+                </svg>
+            </button>
+            <h1>🤖 מנתח מודלים DBT</h1>
+        </header>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">💬</div>
+                <h2>?שלום! איך אוכל לעזור</h2>
+                <p>בחר פרויקט והתחל לשאול שאלות על המודלים שלך</p>
+                <div class="example-prompts">
+                    <button class="example-prompt">?מהו "הסיפור העסקי" של הפרויקט</button>
+                    <button class="example-prompt">?SLA -האם המבנה תומך ב</button>
+                    <button class="example-prompt">הצג לי את כל המודלים הסופיים בסכמה</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea 
+                    id="chatInput" 
+                    class="chat-input" 
+                    placeholder="שאל שאלה..."
+                    rows="1"
+                    dir="rtl"
+                    disabled
+                ></textarea>
+                <div class="input-actions">
+                    <button class="input-btn" id="sendBtn" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/analyze-modern.js?v=3"></script>
+</body>
+</html>

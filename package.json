@@ -1,0 +1,27 @@
+{
+  "name": "dbt-documentation-portal",
+  "version": "1.0.0",
+  "description": "Dynamic DBT Documentation Portal with automatic card generation",
+  "main": "index.html",
+  "scripts": {
+    "start": "node scripts/update-cards-config.js",
+    "watch": "node scripts/update-cards-config.js --watch",
+    "update-cards": "node scripts/update-cards-config.js",
+    "dev": "python -m http.server 8000",
+    "build": "node scripts/update-cards-config.js"
+  },
+  "keywords": [
+    "dbt",
+    "documentation",
+    "portal",
+    "data",
+    "analytics"
+  ],
+  "author": "DBT Portal Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+} 
