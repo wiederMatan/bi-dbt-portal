@@ -139,9 +139,11 @@
             <div class="hidden md:flex gap-2 text-sm">
                 <a href="#api" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">API</a>
                 <a href="#proxy" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">Proxy</a>
+                <a href="#frontend" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">Frontend</a>
                 <a href="#flow" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">תרשים זרימה</a>
                 <a href="#cli" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">CLI</a>
                 <a href="#docker" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">Docker</a>
+                <a href="#deploy" class="nav-link px-3 py-1.5 hover:bg-white/20 rounded-lg transition">Deploy</a>
             </div>
             <!-- תפריט מובייל -->
             <button id="mobileMenuBtn" class="md:hidden p-2 hover:bg-white/20 rounded-lg">
@@ -154,9 +156,11 @@
         <div id="mobileMenu" class="hidden md:hidden px-4 pb-3 space-y-1 text-sm">
             <a href="#api" class="block px-3 py-2 hover:bg-white/20 rounded-lg">API</a>
             <a href="#proxy" class="block px-3 py-2 hover:bg-white/20 rounded-lg">Proxy</a>
+            <a href="#frontend" class="block px-3 py-2 hover:bg-white/20 rounded-lg">Frontend</a>
             <a href="#flow" class="block px-3 py-2 hover:bg-white/20 rounded-lg">תרשים זרימה</a>
             <a href="#cli" class="block px-3 py-2 hover:bg-white/20 rounded-lg">CLI</a>
             <a href="#docker" class="block px-3 py-2 hover:bg-white/20 rounded-lg">Docker</a>
+            <a href="#deploy" class="block px-3 py-2 hover:bg-white/20 rounded-lg">Deploy</a>
         </div>
     </nav>
 
@@ -173,7 +177,7 @@
             <!-- סטטיסטיקות מהירות -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
                 <div class="bg-white/10 backdrop-blur rounded-xl p-4">
-                    <div class="text-3xl font-bold">3</div>
+                    <div class="text-3xl font-bold">4</div>
                     <div class="text-sm opacity-80">שכבות ארכיטקטורה</div>
                 </div>
                 <div class="bg-white/10 backdrop-blur rounded-xl p-4">
@@ -181,12 +185,12 @@
                     <div class="text-sm opacity-80">API Endpoints</div>
                 </div>
                 <div class="bg-white/10 backdrop-blur rounded-xl p-4">
-                    <div class="text-3xl font-bold">2</div>
-                    <div class="text-sm opacity-80">Docker Services</div>
+                    <div class="text-3xl font-bold">19</div>
+                    <div class="text-sm opacity-80">קבצי פרויקט</div>
                 </div>
                 <div class="bg-white/10 backdrop-blur rounded-xl p-4">
-                    <div class="text-3xl font-bold">3</div>
-                    <div class="text-sm opacity-80">פורטים פעילים</div>
+                    <div class="text-3xl font-bold">5</div>
+                    <div class="text-sm opacity-80">תיקיות ראשיות</div>
                 </div>
             </div>
         </div>
@@ -569,7 +573,218 @@ location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
         </section>
 
         <!-- ========================================== -->
-        <!-- חלק 3: תרשים זרימה (Mermaid.js)          -->
+        <!-- חלק 3: ארכיטקטורת Frontend               -->
+        <!-- ========================================== -->
+        <section id="frontend" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-pink-600 text-white px-6 py-4">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <span class="bg-white/20 rounded-lg p-2">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
+                            </svg>
+                        </span>
+                        ארכיטקטורת Frontend (תיקיית assets/)
+                    </h2>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- הסבר כללי -->
+                    <div class="bg-pink-50 border-r-4 border-pink-500 p-5 rounded-lg">
+                        <h3 class="font-bold text-pink-800 text-lg mb-2">הסבר כללי</h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            תיקיית <code class="bg-pink-100 px-1 rounded">assets/</code> מכילה את כל קבצי ה-CSS וה-JavaScript של הפרויקט.
+                            הקבצים מחולקים לשתי תיקיות: <code class="bg-pink-100 px-1 rounded">css/</code> לעיצוב
+                            ו-<code class="bg-pink-100 px-1 rounded">js/</code> ללוגיקה.
+                            כל קובץ אחראי על חלק ספציפי מהממשק.
+                        </p>
+                    </div>
+
+                    <!-- CSS Files -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-pink-100 text-pink-700 rounded-lg flex items-center justify-center text-sm font-bold">C</span>
+                            assets/css/ - קבצי עיצוב
+                        </h3>
+
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded">style.css</span>
+                                    <span class="text-xs text-gray-400">15KB</span>
+                                </div>
+                                <p class="text-gray-700 text-sm">
+                                    עיצוב ראשי של הפורטל - תמה כהה עם גרדיאנטים, כרטיסיות, ניווט, חיפוש ואנימציות.
+                                    מגדיר משתני צבע: <code class="bg-gray-100 px-1 rounded text-xs">#667eea</code> (primary),
+                                    <code class="bg-gray-100 px-1 rounded text-xs">#764ba2</code> (secondary).
+                                </p>
+                            </div>
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded">analyze-modern.css</span>
+                                    <span class="text-xs text-gray-400">10KB</span>
+                                </div>
+                                <p class="text-gray-700 text-sm">
+                                    עיצוב מודרני בסגנון Gemini לממשק הצ'אט. כולל סרגל צד (260px), בועות הודעות,
+                                    תמיכה דו-כיוונית (RTL/LTR) ואנימציית טעינה.
+                                </p>
+                            </div>
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded">analyze.css</span>
+                                    <span class="text-xs text-gray-400">4.6KB</span>
+                                </div>
+                                <p class="text-gray-700 text-sm">
+                                    עיצוב קלאסי לממשק ניתוח מודלי DBT - בועות צ'אט, בלוקי קוד כהים, וכפתורי שליחה/ניקוי.
+                                </p>
+                            </div>
+                            <div class="border border-gray-200 rounded-xl p-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded">responsive.css</span>
+                                    <span class="text-xs text-gray-400">7KB</span>
+                                </div>
+                                <p class="text-gray-700 text-sm">
+                                    עיצוב רספונסיבי מלא - מ-Desktop (1400px+) עד מובייל (360px).
+                                    כולל תמיכה ב-Dark Mode, הדפסה ו-Reduced Motion.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- JS Files -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 bg-yellow-100 text-yellow-700 rounded-lg flex items-center justify-center text-sm font-bold">J</span>
+                            assets/js/ - לוגיקת JavaScript
+                        </h3>
+
+                        <div class="space-y-3">
+                            <!-- main.js -->
+                            <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="bg-gray-50 px-5 py-3 flex items-center gap-3 border-b">
+                                    <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-bold">main.js</span>
+                                    <span class="text-gray-500 text-sm">&#8212; לוגיקה ראשית של הפורטל</span>
+                                    <span class="text-xs text-gray-400 mr-auto">11KB</span>
+                                </div>
+                                <div class="p-5 space-y-3">
+                                    <p class="text-gray-700 text-sm">
+                                        מחלקת <code class="bg-gray-100 px-1 rounded">DBTPortal</code> - ניווט, תפריט המבורגר, אנימציות גלילה,
+                                        רענון אוטומטי כל 5 דקות, ועדכון סנכרון אחרון.
+                                    </p>
+                                    <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto text-sm"><code>class DBTPortal {
+    constructor() {
+        this.setupNavigation();      // תפריט המבורגר + ניווט
+        this.highlightCurrentPage(); // הדגשת דף נוכחי
+        this.setupAutoRefresh();     // רענון כל 5 דקות
+        this.setupAnimations();      // Intersection Observer
+        this.updateLastSync();       // שעון סנכרון
+    }
+}</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- dynamic-cards.js -->
+                            <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="bg-gray-50 px-5 py-3 flex items-center gap-3 border-b">
+                                    <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-bold">dynamic-cards.js</span>
+                                    <span class="text-gray-500 text-sm">&#8212; ניהול כרטיסיות דינמיות</span>
+                                    <span class="text-xs text-gray-400 mr-auto">14KB</span>
+                                </div>
+                                <div class="p-5 space-y-3">
+                                    <p class="text-gray-700 text-sm">
+                                        טוען את <code class="bg-gray-100 px-1 rounded">cards-config.json</code> ומרנדר כרטיסיות פרויקט.
+                                        כולל סידור לפי עדיפות, בדיקת שינויים כל 30 שניות, ואנימציית מספרים.
+                                    </p>
+                                    <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto text-sm"><code>class DynamicCardManager {
+    async loadCardsConfiguration() {
+        const response = await fetch('/static/cards-config.json');
+        this.cards = await response.json();
+        this.renderCards();  // מייצר את ה-DOM של כל כרטיסייה
+    }
+    checkForNewFiles() {
+        // בודק שינויים כל 30 שניות
+        setInterval(() => this.loadCardsConfiguration(), 30000);
+    }
+}</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- search.js -->
+                            <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="bg-gray-50 px-5 py-3 flex items-center gap-3 border-b">
+                                    <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-bold">search.js</span>
+                                    <span class="text-gray-500 text-sm">&#8212; חיפוש וסינון</span>
+                                    <span class="text-xs text-gray-400 mr-auto">18KB</span>
+                                </div>
+                                <div class="p-5 space-y-3">
+                                    <p class="text-gray-700 text-sm">
+                                        מחלקת <code class="bg-gray-100 px-1 rounded">SearchManager</code> - חיפוש כרטיסיות, סינון לפי קטגוריה,
+                                        הצעות אוטומטיות, וייצוא תוצאות ל-JSON.
+                                    </p>
+                                    <div class="bg-purple-50 border-r-4 border-purple-400 p-3 rounded-lg">
+                                        <p class="text-sm text-purple-800 font-semibold mb-1">קיצורי מקלדת:</p>
+                                        <div class="text-sm text-gray-700 space-y-1">
+                                            <div><code class="bg-purple-100 px-1 rounded">Ctrl+K</code> &#8212; פוקוס על שדה החיפוש</div>
+                                            <div><code class="bg-purple-100 px-1 rounded">Ctrl+/</code> &#8212; ניקוי חיפוש</div>
+                                            <div><code class="bg-purple-100 px-1 rounded">Escape</code> &#8212; סגירת הצעות</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- analyze-modern.js + analyze.js -->
+                            <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                <div class="bg-gray-50 px-5 py-3 flex items-center gap-3 border-b">
+                                    <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded font-bold">analyze-modern.js / analyze.js</span>
+                                    <span class="text-gray-500 text-sm">&#8212; ממשק צ'אט AI</span>
+                                </div>
+                                <div class="p-5 space-y-3">
+                                    <p class="text-gray-700 text-sm">
+                                        שתי גרסאות של מחלקת <code class="bg-gray-100 px-1 rounded">DBTAnalyzer</code> - ממשק צ'אט לניתוח מודלי DBT.
+                                        הגרסה המודרנית כוללת זיהוי אוטומטי של כיוון טקסט (עברית/אנגלית), היסטוריית פרויקטים אחרונים ב-localStorage,
+                                        ועיצוב Markdown מתקדם.
+                                    </p>
+                                    <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto text-sm"><code>class DBTAnalyzer {
+    async sendMessage() {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            body: JSON.stringify({
+                project_name: this.currentProject,
+                message: userMessage,
+                conversation_history: this.history
+            })
+        });
+        const data = await response.json();
+        this.addMessage('assistant', data.response);
+    }
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- סיכום Frontend -->
+                    <div class="bg-pink-50 border border-pink-200 rounded-xl p-5">
+                        <h4 class="font-bold text-pink-800 mb-2">&#9989; מבנה תיקיית assets/</h4>
+                        <pre class="text-sm text-gray-700 leading-relaxed"><code>assets/
+&#9500;&#9472;&#9472; css/
+&#9474;   &#9500;&#9472;&#9472; style.css              # עיצוב ראשי - פורטל
+&#9474;   &#9500;&#9472;&#9472; analyze-modern.css     # עיצוב צ'אט מודרני
+&#9474;   &#9500;&#9472;&#9472; analyze.css            # עיצוב צ'אט קלאסי
+&#9474;   &#9492;&#9472;&#9472; responsive.css         # Breakpoints + Dark Mode
+&#9492;&#9472;&#9472; js/
+    &#9500;&#9472;&#9472; main.js                # ניווט + אנימציות + רענון
+    &#9500;&#9472;&#9472; dynamic-cards.js       # טעינת כרטיסיות מ-JSON
+    &#9500;&#9472;&#9472; search.js              # חיפוש + סינון + ייצוא
+    &#9500;&#9472;&#9472; analyze-modern.js      # צ'אט AI (גרסה מודרנית)
+    &#9492;&#9472;&#9472; analyze.js             # צ'אט AI (גרסה קלאסית)</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- חלק 4: תרשים זרימה (Mermaid.js)          -->
         <!-- ========================================== -->
         <section id="flow" class="fade-in">
             <div class="bg-white rounded-2xl shadow-md overflow-hidden">
@@ -601,6 +816,7 @@ location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
 graph LR
     A["&#127760; דפדפן<br/>localhost:5000"] -->|"HTTP Request"| B["&#9881;&#65039; Nginx<br/>Reverse Proxy"]
     B -->|"/*.html, /assets/*"| C["&#128196; קבצים סטטיים<br/>HTML / CSS / JS"]
+    B -->|"/static/*"| H["&#128203; cards-config.json<br/>הגדרות כרטיסיות"]
     B -->|"/api/*"| D["&#128013; Flask Backend<br/>port 5001"]
     D -->|"/api/projects"| E["&#128193; סריקת תיקיות<br/>bi_* directories"]
     D -->|"/api/chat"| F["&#129302; Kiro Proxy<br/>port 5002"]
@@ -609,6 +825,7 @@ graph LR
     style A fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
     style B fill:#fed7aa,stroke:#f97316,stroke-width:2px
     style C fill:#e5e7eb,stroke:#6b7280,stroke-width:2px
+    style H fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
     style D fill:#bbf7d0,stroke:#22c55e,stroke-width:2px
     style E fill:#bbf7d0,stroke:#22c55e,stroke-width:1px
     style F fill:#e9d5ff,stroke:#a855f7,stroke-width:2px
@@ -1045,7 +1262,182 @@ CMD ["nginx", "-g", "daemon off;"]</code></pre>
         </section>
 
         <!-- ========================================== -->
-        <!-- חלק 6: מילון מונחים                       -->
+        <!-- חלק 7: Deploy & CI/CD                     -->
+        <!-- ========================================== -->
+        <section id="deploy" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+                <div class="bg-emerald-600 text-white px-6 py-4">
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <span class="bg-white/20 rounded-lg p-2">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M12 19V5M5 12l7-7 7 7"/>
+                            </svg>
+                        </span>
+                        Deploy & CI/CD (תיקיות scripts/ + static/)
+                    </h2>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <!-- הסבר כללי -->
+                    <div class="bg-emerald-50 border-r-4 border-emerald-500 p-5 rounded-lg">
+                        <h3 class="font-bold text-emerald-800 text-lg mb-2">הסבר כללי</h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            תיקיית <code class="bg-emerald-100 px-1 rounded">scripts/</code> מכילה את כלי הפריסה האוטומטית.
+                            כאשר פרויקט DBT חדש מוכן, הסקריפטים בונים את ה-Docker image, מייצרים את ה-manifest,
+                            ומעדכנים את קובץ ההגדרות <code class="bg-emerald-100 px-1 rounded">static/cards-config.json</code>
+                            כדי שהכרטיסייה תופיע אוטומטית בפורטל.
+                        </p>
+                    </div>
+
+                    <!-- deploy.py -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="bg-gray-50 px-5 py-3 flex items-center gap-3 border-b">
+                            <span class="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">PY</span>
+                            <code class="text-gray-800 font-mono text-sm">scripts/deploy.py</code>
+                            <span class="text-gray-500 text-sm mr-auto">&#8212; פריסת פרויקט DBT לפורטל</span>
+                        </div>
+                        <div class="p-5 space-y-4">
+                            <p class="text-gray-700 text-sm">
+                                סקריפט Python שמבצע את כל תהליך הפריסה: יצירת תיקייה, בניית Docker,
+                                חילוץ manifest, ועדכון קובץ הכרטיסיות.
+                            </p>
+                            <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code># שימוש: python3 deploy.py &lt;project_name&gt;
+# דוגמה: python3 deploy.py bi_sales
+
+def deploy(project_name):
+    # שלב 1: יצירת תיקיית פרויקט
+    project_dir = f"/home/bi_linux/bi-dbt-portal/{project_name}"
+    os.makedirs(project_dir, exist_ok=True)
+
+    # שלב 2: הרצת Docker ויצירת docs סטטיים
+    subprocess.run([
+        "docker", "run", f"dbt-{project_name}:latest",
+        "docs", "generate", "--static"
+    ])
+
+    # שלב 3: קריאת manifest וספירת מודלים
+    with open(f"{project_dir}/manifest.json") as f:
+        manifest = json.load(f)
+    model_count = len(manifest.get('nodes', {}))
+
+    # שלב 4: עדכון cards-config.json
+    config.append({
+        "title": project_name.replace("bi_", "").capitalize(),
+        "url": f"{project_name}/static_index.html",
+        "status": "active",
+        "icon": "&#128202;",
+        "models": model_count,
+        "priority": 999
+    })</code></pre>
+
+                            <div class="bg-yellow-50 border-r-4 border-yellow-400 p-3 rounded-lg">
+                                <p class="text-sm text-gray-700">
+                                    <strong>&#128161; שים לב:</strong> הסקריפט מעדכן אוטומטית את
+                                    <code class="bg-yellow-100 px-1 rounded">static/cards-config.json</code>.
+                                    אחרי הפריסה, הכרטיסייה החדשה תופיע בפורטל ללא צורך בשינוי קוד.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- release-step.sh -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="bg-gray-50 px-5 py-3 flex items-center gap-3 border-b">
+                            <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full">SH</span>
+                            <code class="text-gray-800 font-mono text-sm">scripts/release-step.sh</code>
+                            <span class="text-gray-500 text-sm mr-auto">&#8212; שלב Release ב-Azure Pipeline</span>
+                        </div>
+                        <div class="p-5 space-y-4">
+                            <p class="text-gray-700 text-sm">
+                                סקריפט שרץ כחלק מ-CI/CD Pipeline ב-Azure DevOps. מושך את ה-Docker image האחרון,
+                                מתייג אותו כ-latest, ומפעיל את deploy.py.
+                            </p>
+                            <pre class="bg-gray-900 text-green-400 rounded-lg p-4 overflow-x-auto"><code>#!/bin/bash
+# נקרא מתוך Azure Pipeline - Release step
+
+# קריאת תג Docker מקובץ
+DOCKER_TAG=$(cat docker_tag.txt)
+
+# משיכת ה-image החדש
+docker pull $DOCKER_TAG
+
+# תיוג כ-latest
+docker tag $DOCKER_TAG dbt-bi_miznon:latest
+
+# הפעלת סקריפט הפריסה
+python3 scripts/deploy.py bi_miznon
+
+echo "Release completed successfully!"</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- cards-config.json -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <div class="bg-gray-50 px-5 py-3 flex items-center gap-3 border-b">
+                            <span class="bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">JSON</span>
+                            <code class="text-gray-800 font-mono text-sm">static/cards-config.json</code>
+                            <span class="text-gray-500 text-sm mr-auto">&#8212; הגדרות כרטיסיות הפורטל</span>
+                        </div>
+                        <div class="p-5 space-y-4">
+                            <p class="text-gray-700 text-sm">
+                                קובץ JSON שמגדיר את כל הכרטיסיות שמוצגות בדף הראשי של הפורטל.
+                                נטען ע"י <code class="bg-gray-100 px-1 rounded">dynamic-cards.js</code>
+                                ומתעדכן אוטומטית ע"י <code class="bg-gray-100 px-1 rounded">deploy.py</code>.
+                            </p>
+                            <pre class="bg-gray-900 text-yellow-300 rounded-lg p-4 overflow-x-auto"><code>[
+  {
+    "title": "Bi Project",         // שם תצוגה
+    "description": "bi_Project DBT documentation",
+    "url": "bi_Project/static_index.html",  // קישור לדוקומנטציה
+    "status": "active",            // active / pending
+    "icon": "&#128202;",                    // אייקון
+    "category": "active",          // קטגוריית סינון
+    "lastUpdated": "1m",           // זמן עדכון אחרון
+    "models": 24,                  // מספר מודלי DBT
+    "priority": 999                // עדיפות מיון (נמוך = גבוה)
+  }
+]</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- תרשים זרימת Deploy -->
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg mb-4">תהליך פריסה מלא</h3>
+                        <div class="bg-gray-50 rounded-xl p-6 overflow-x-auto">
+                            <div class="mermaid">
+graph LR
+    A["&#128230; Azure Pipeline<br/>Release Step"] -->|"docker pull"| B["&#128051; Docker Image<br/>dbt-project:tag"]
+    B -->|"docker tag latest"| C["&#128196; deploy.py"]
+    C -->|"docs generate"| D["&#128193; manifest.json<br/>+ static_index.html"]
+    C -->|"update"| E["&#128203; cards-config.json"]
+    E -->|"auto-load"| F["&#127760; Portal<br/>כרטיסייה חדשה"]
+
+    style A fill:#dbeafe,stroke:#3b82f6,stroke-width:2px
+    style B fill:#e9d5ff,stroke:#a855f7,stroke-width:2px
+    style C fill:#bbf7d0,stroke:#22c55e,stroke-width:2px
+    style D fill:#fed7aa,stroke:#f97316,stroke-width:2px
+    style E fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style F fill:#bbf7d0,stroke:#22c55e,stroke-width:2px
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- סיכום -->
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                        <h4 class="font-bold text-emerald-800 mb-2">&#9989; לסיכום</h4>
+                        <p class="text-gray-700 text-sm">
+                            תהליך הפריסה אוטומטי לחלוטין: Azure Pipeline מושך את ה-image,
+                            <code class="bg-emerald-100 px-1 rounded">deploy.py</code> מייצר את הדוקומנטציה ומעדכן את ההגדרות,
+                            והפורטל טוען את הכרטיסייה החדשה אוטומטית דרך
+                            <code class="bg-emerald-100 px-1 rounded">dynamic-cards.js</code>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- חלק 8: מילון מונחים                       -->
         <!-- ========================================== -->
         <section id="glossary" class="fade-in">
             <div class="bg-white rounded-2xl shadow-md overflow-hidden">
