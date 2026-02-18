@@ -1,0 +1,13 @@
+[
+  {
+    "title": "Bi Project",
+    "description": "bi_Project DBT documentation",
+    "url": "bi_Project/static_index.html",
+    "status": "active",
+    "icon": "\ud83d\udcca",
+    "category": "active",
+    "lastUpdated": "1m",
+    "models": 24,
+    "priority": 999
+  }
+]
