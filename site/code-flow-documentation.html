@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BI DBT Portal - Code Flow Documentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .subtitle { font-size: 1.2em; opacity: 0.9; }
+        .section { background: white; margin: 20px 0; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h2 { color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 10px; margin-bottom: 20px; }
+        h3 { color: #764ba2; margin-top: 20px; margin-bottom: 10px; }
+        .flow-diagram { background: #f9f9f9; border-left: 4px solid #667eea; padding: 20px; margin: 20px 0; }
+        .component { background: #e8eaf6; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #5c6bc0; }
+        .code-block { background: #2d2d2d; color: #f8f8f2; padding: 20px; border-radius: 5px; overflow-x: auto; margin: 15px 0; font-size: 0.85em; }
+        .endpoint { background: #e8f5e9; padding: 10px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #4caf50; }
+        .endpoint-method { display: inline-block; background: #4caf50; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold; margin-right: 10px; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 15px 0; }
+        .info { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 15px 0; }
+        ul, ol { margin-left: 30px; margin-top: 10px; }
+        li { margin: 8px 0; }
+        .tech-stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .tech-item { background: #f3e5f5; padding: 15px; border-radius: 5px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #667eea; color: white; }
+        tr:hover { background: #f5f5f5; }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            header { padding: 25px 15px; }
+            h1 { font-size: 1.8em; }
+            .subtitle { font-size: 1em; }
+            .container { padding: 10px; }
+            .section { padding: 20px 15px; margin: 15px 0; }
+            h2 { font-size: 1.3em; }
+            h3 { font-size: 1.1em; }
+            ul, ol { margin-left: 20px; }
+
+            .flow-diagram { padding: 15px 10px; overflow-x: auto; }
+            .flow-diagram pre { font-size: 0.7em; min-width: 500px; }
+
+            .code-block { padding: 15px; font-size: 0.8em; }
+
+            .tech-stack { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+
+            table { display: block; overflow-x: auto; white-space: nowrap; }
+
+            .endpoint { padding: 10px 8px; }
+            .component { padding: 12px 10px; }
+        }
+
+        @media (max-width: 480px) {
+            header { padding: 20px 10px; }
+            h1 { font-size: 1.4em; }
+            .subtitle { font-size: 0.9em; }
+            .container { padding: 8px; }
+            .section { padding: 15px 12px; margin: 10px 0; }
+            h2 { font-size: 1.15em; }
+            ul, ol { margin-left: 15px; }
+
+            .flow-diagram pre { font-size: 0.6em; }
+
+            .tech-stack { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .tech-item { padding: 10px; font-size: 0.9em; }
+
+            th, td { padding: 8px 6px; font-size: 0.85em; }
+
+            footer { padding: 15px 10px; font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🚀 BI DBT Portal</h1>
+        <p class="subtitle">Complete Code Flow Documentation & Architecture Guide</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">Generated: February 15, 2026</p>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2>📋 Project Overview</h2>
+            <p>The BI DBT Portal is a web-based application for browsing and analyzing DBT (Data Build Tool) project documentation with AI-powered chat assistance. It provides a centralized hub for multiple DBT projects with intelligent querying capabilities powered by Kiro CLI.</p>
+            
+            <div class="tech-stack">
+                <div class="tech-item"><strong>Frontend</strong><br>HTML/CSS/JavaScript</div>
+                <div class="tech-item"><strong>Web Server</strong><br>Nginx</div>
+                <div class="tech-item"><strong>Backend API</strong><br>Flask (Python)</div>
+                <div class="tech-item"><strong>AI Engine</strong><br>Kiro CLI</div>
+                <div class="tech-item"><strong>Deployment</strong><br>Docker Compose</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🏗️ System Architecture</h2>
+            
+            <div class="flow-diagram">
+                <h3>High-Level Architecture</h3>
+                <pre style="font-family: monospace; line-height: 1.8;">
+┌─────────────────────────────────────────────────────────────────┐
+│                         USER BROWSER                             │
+│                    (http://localhost:5000)                       │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      NGINX (Port 80)                             │
+│  • Serves static files (HTML/CSS/JS)                            │
+│  • Proxies /api/* requests to Flask                             │
+│  • Handles caching & compression                                │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+                ┌────────────┴────────────┐
+                │                         │
+                ▼                         ▼
+┌──────────────────────────┐  ┌──────────────────────────┐
+│   STATIC CONTENT         │  │   FLASK API (Port 5001)  │
+│   • index.html           │  │   • /api/projects        │
+│   • analyze.html         │  │   • /api/chat            │
+│   • CSS/JS assets        │  │   • Manifest processing  │
+└──────────────────────────┘  └──────────┬───────────────┘
+                                         │
+                                         ▼
+                              ┌──────────────────────────┐
+                              │  KIRO PROXY (Port 5002)  │
+                              │  • Runs on host machine  │
+                              │  • Executes kiro-cli     │
+                              │  • Returns AI responses  │
+                              └──────────────────────────┘
+                </pre>
+            </div>
+
+            <div class="component">
+                <h3>Container Architecture</h3>
+                <ul>
+                    <li><strong>bi-dbt-portal</strong> (Nginx): Serves frontend on port 5000</li>
+                    <li><strong>flask-backend</strong>: API server on port 5001</li>
+                    <li><strong>kiro_proxy.py</strong>: Host-side HTTP proxy on port 5002</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔄 Request Flow Diagrams</h2>
+            
+            <h3>1. Page Load Flow</h3>
+            <div class="flow-diagram">
+                <ol>
+                    <li><strong>User navigates to http://localhost:5000</strong></li>
+                    <li>Nginx serves index.html</li>
+                    <li>Browser loads CSS from assets/css/</li>
+                    <li>Browser loads JavaScript modules:
+                        <ul>
+                            <li>main.js - Core portal functionality</li>
+                            <li>dynamic-cards.js - Card rendering</li>
+                            <li>search.js - Search & filter logic</li>
+                        </ul>
+                    </li>
+                    <li>DynamicCardManager fetches static/cards-config.json</li>
+                    <li>Cards are rendered dynamically in the catalog grid</li>
+                    <li>Project statistics are updated (total projects, models, last sync)</li>
+                </ol>
+            </div>
+
+            <h3>2. AI Chat Flow (analyze.html)</h3>
+            <div class="flow-diagram">
+                <ol>
+                    <li><strong>User opens analyze.html</strong></li>
+                    <li>DBTAnalyzer class initializes</li>
+                    <li>Fetches available projects via GET /api/projects</li>
+                    <li>User selects a project and types a question</li>
+                    <li>Frontend sends POST /api/chat with project_name, message, conversation_history</li>
+                    <li>Flask backend loads manifest.json for the project</li>
+                    <li>Checks for file creation attempts (security)</li>
+                    <li>Builds context with manifest data</li>
+                    <li>Sends prompt to Kiro proxy at http://111.27.0.1:5002/kiro</li>
+                    <li>Kiro proxy executes: kiro-cli chat --non-interactive</li>
+                    <li>AI response flows back through the chain</li>
+                    <li>Frontend renders response with Markdown formatting</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔌 Backend API Endpoints</h2>
+            
+            <div class="endpoint">
+                <span class="endpoint-method">GET</span>
+                <strong>/api/projects</strong>
+                <p><strong>Purpose:</strong> List all available DBT projects</p>
+                <p><strong>Logic:</strong></p>
+                <ul>
+                    <li>Scans PORTAL_DIR for directories</li>
+                    <li>Checks for manifest.json in each directory</li>
+                    <li>Parses manifest to extract metadata and model count</li>
+                    <li>Returns sorted list of projects</li>
+                </ul>
+            </div>
+
+            <div class="endpoint">
+                <span class="endpoint-method">POST</span>
+                <strong>/api/chat</strong>
+                <p><strong>Purpose:</strong> Handle AI chat requests</p>
+                <p><strong>Process:</strong></p>
+                <ol>
+                    <li>Validates project_name and message</li>
+                    <li>Loads manifest.json from project directory</li>
+                    <li>Checks for file creation keywords (security)</li>
+                    <li>Creates manifest summary if file is too large (>100KB)</li>
+                    <li>Builds context with role, rules, and manifest data</li>
+                    <li>Appends conversation history</li>
+                    <li>Sends to Kiro proxy via HTTP POST</li>
+                    <li>Cleans response (removes ANSI codes, unescapes HTML)</li>
+                    <li>Returns formatted response</li>
+                </ol>
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ Security Features:</strong>
+                <ul>
+                    <li>Blocks file creation requests (checks for keywords: create, write, save, etc.)</li>
+                    <li>Read-only access to manifest files</li>
+                    <li>ANSI escape code removal from responses</li>
+                    <li>HTML entity unescaping for proper display</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💻 Frontend Components</h2>
+            
+            <h3>Main Portal (index.html)</h3>
+            <div class="component">
+                <strong>Purpose:</strong> Landing page displaying all DBT projects as cards
+                <p><strong>Key Classes:</strong></p>
+                <ul>
+                    <li><strong>DBTPortal (main.js):</strong> Core functionality, navigation, card interactions</li>
+                    <li><strong>DynamicCardManager (dynamic-cards.js):</strong> Loads and renders project cards from cards-config.json</li>
+                    <li><strong>SearchManager (search.js):</strong> Implements search and filter functionality</li>
+                </ul>
+            </div>
+
+            <h3>AI Analyzer (analyze.html)</h3>
+            <div class="component">
+                <strong>Purpose:</strong> Chat interface for querying DBT models with AI
+                <p><strong>Key Class:</strong></p>
+                <ul>
+                    <li><strong>DBTAnalyzer (analyze-modern.js):</strong>
+                        <ul>
+                            <li>Loads projects from /api/projects</li>
+                            <li>Manages conversation history</li>
+                            <li>Sends chat messages to /api/chat</li>
+                            <li>Renders responses with Markdown support</li>
+                            <li>Maintains recent projects list in localStorage</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <h3>Search Functionality</h3>
+            <div class="component">
+                <strong>Features:</strong>
+                <ul>
+                    <li>Debounced search (300ms delay)</li>
+                    <li>Title-only search with first-word priority</li>
+                    <li>Keyboard shortcuts (Ctrl+K to focus, Ctrl+/ to clear)</li>
+                    <li>Real-time result highlighting</li>
+                    <li>Filter integration</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🐳 Docker Configuration</h2>
+            
+            <h3>Services</h3>
+            <table>
+                <tr>
+                    <th>Service</th>
+                    <th>Image</th>
+                    <th>Port</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>bi-dbt-portal</td>
+                    <td>Nginx (Bitnami)</td>
+                    <td>5000:8080</td>
+                    <td>Frontend web server</td>
+                </tr>
+                <tr>
+                    <td>flask-backend</td>
+                    <td>Python 3.9</td>
+                    <td>5001:5001</td>
+                    <td>API backend</td>
+                </tr>
+            </table>
+
+            <h3>Volume Mounts</h3>
+            <div class="component">
+                <strong>Flask Backend:</strong>
+                <ul>
+                    <li><code>.:/app/portal:ro</code> - Project files (read-only)</li>
+                    <li><code>/home/bi_linux/.aws:/root/.aws:ro</code> - AWS credentials</li>
+                    <li><code>/home/bi_linux/.kiro:/root/.kiro:ro</code> - Kiro CLI config</li>
+                </ul>
+                <strong>Nginx:</strong>
+                <ul>
+                    <li><code>.:/opt/bitnami/nginx/html:ro</code> - Static files</li>
+                    <li><code>./nginx.conf:/etc/nginx/nginx.conf:ro</code> - Nginx config</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔐 Security & Best Practices</h2>
+            
+            <div class="info">
+                <h3>Implemented Security Measures</h3>
+                <ul>
+                    <li><strong>Read-Only Volumes:</strong> All mounts are read-only (:ro)</li>
+                    <li><strong>File Creation Prevention:</strong> Backend blocks create/write/save keywords</li>
+                    <li><strong>CORS Configuration:</strong> Enabled for same-origin requests</li>
+                    <li><strong>Security Headers:</strong> X-Frame-Options, X-Content-Type-Options, X-XSS-Protection</li>
+                    <li><strong>Input Sanitization:</strong> ANSI code removal, HTML entity handling</li>
+                    <li><strong>Timeout Protection:</strong> 60-second timeout on Kiro CLI calls</li>
+                </ul>
+            </div>
+
+            <div class="warning">
+                <h3>Security Considerations</h3>
+                <ul>
+                    <li>Kiro proxy runs on host (172.27.0.1:5002) - ensure firewall rules</li>
+                    <li>AWS credentials mounted read-only - no modification possible</li>
+                    <li>Manifest files can be large - chunking implemented for >100KB files</li>
+                    <li>No authentication layer - suitable for internal networks only</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Data Flow: AI Chat Request</h2>
+            
+            <div class="flow-diagram">
+                <pre style="font-family: monospace; line-height: 1.8;">
+USER INPUT
+    │
+    ├─ Project: "bi_example"
+    ├─ Message: "מה הלוגיקה של המודל fact_sales?"
+    └─ History: [previous messages]
+    │
+    ▼
+FRONTEND (analyze-modern.js)
+    │
+    ├─ Validates input
+    ├─ Adds loading indicator
+    └─ POST /api/chat
+    │
+    ▼
+FLASK BACKEND (app.py)
+    │
+    ├─ Load manifest.json
+    ├─ Check for file creation keywords → BLOCK if found
+    ├─ Check manifest size
+    │   ├─ If > 100KB → create_manifest_summary()
+    │   └─ Else → use full manifest
+    ├─ Build context:
+    │   ├─ Role: "KIRO Analytics Architect"
+    │   ├─ Rules: Language, Security, Formatting
+    │   ├─ Manifest data
+    │   └─ Conversation history
+    └─ POST http://172.27.0.1:5002/kiro
+    │
+    ▼
+KIRO PROXY (kiro_proxy.py)
+    │
+    ├─ Receive prompt
+    ├─ Execute: kiro-cli chat --non-interactive
+    ├─ Capture stdout/stderr
+    └─ Return JSON response
+    │
+    ▼
+FLASK BACKEND (app.py)
+    │
+    ├─ Remove ANSI escape codes
+    ├─ Unescape HTML entities
+    ├─ Remove "> " prefix
+    └─ Return clean response
+    │
+    ▼
+FRONTEND (analyze-modern.js)
+    │
+    ├─ Parse Markdown
+    ├─ Render formatted response
+    ├─ Update conversation history
+    ├─ Remove loading indicator
+    └─ Scroll to bottom
+                </pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Deployment & Startup</h2>
+            
+            <h3>Quick Start (start.sh)</h3>
+            <div class="code-block">
+#!/bin/bash
+# 1. Check Docker is running
+# 2. Check docker-compose is available
+# 3. Run: docker-compose up --build -d
+# 4. Display access URLs
+            </div>
+
+            <h3>Manual Startup</h3>
+            <div class="component">
+                <ol>
+                    <li><strong>Start Kiro Proxy (Host):</strong>
+                        <div class="code-block">python3 kiro_sessions/kiro_proxy.py</div>
+                    </li>
+                    <li><strong>Start Docker Services:</strong>
+                        <div class="code-block">docker-compose up -d</div>
+                    </li>
+                    <li><strong>Access Portal:</strong>
+                        <ul>
+                            <li>Main Portal: http://localhost:5000</li>
+                            <li>AI Analyzer: http://localhost:5000/analyze.html</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📁 Project Structure</h2>
+            
+            <div class="code-block">
+bi-dbt-portal/
+├── backend/
+│   ├── app.py                 # Flask API (projects, chat endpoints)
+│   ├── Dockerfile             # Backend container config
+│   └── requirements.txt       # Python dependencies
+├── assets/
+│   ├── css/
+│   │   ├── style.css          # Main styles
+│   │   └── responsive.css     # Mobile styles
+│   ├── js/
+│   │   ├── main.js            # DBTPortal class
+│   │   ├── dynamic-cards.js   # DynamicCardManager class
+│   │   ├── search.js          # SearchManager class
+│   │   ├── analyze-modern.js  # DBTAnalyzer class
+│   │   └── analyze.js         # Legacy analyzer
+│   └── images/
+├── kiro_sessions/
+│   └── kiro_proxy.py          # HTTP proxy for Kiro CLI
+├── static/
+│   └── cards-config.json      # Project cards configuration
+├── scripts/
+│   ├── deploy.py              # Deployment automation
+│   └── release-step.sh        # Release process
+├── index.html                 # Main portal page
+├── analyze.html               # AI chat interface
+├── docker-compose.yml         # Container orchestration
+├── nginx.conf                 # Nginx configuration
+├── start.sh                   # Quick start script
+└── README.md                  # Project documentation
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Key Features</h2>
+            
+            <div class="component">
+                <h3>1. Dynamic Project Discovery</h3>
+                <p>Automatically scans for bi_* directories with manifest.json files</p>
+            </div>
+
+            <div class="component">
+                <h3>2. AI-Powered Analysis</h3>
+                <p>Uses Kiro CLI to answer questions about DBT models in Hebrew with structured formatting</p>
+            </div>
+
+            <div class="component">
+                <h3>3. Real-Time Search</h3>
+                <p>Debounced search with title-first matching and keyboard shortcuts</p>
+            </div>
+
+            <div class="component">
+                <h3>4. Conversation History</h3>
+                <p>Maintains context across multiple questions in the same session</p>
+            </div>
+
+            <div class="component">
+                <h3>5. Responsive Design</h3>
+                <p>Mobile-friendly interface with RTL support for Hebrew</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Configuration</h2>
+            
+            <h3>Environment Variables</h3>
+            <table>
+                <tr>
+                    <th>Variable</th>
+                    <th>Default</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>PORTAL_DIR</td>
+                    <td>/app/portal</td>
+                    <td>Root directory for DBT projects</td>
+                </tr>
+                <tr>
+                    <td>FLASK_ENV</td>
+                    <td>production</td>
+                    <td>Flask environment mode</td>
+                </tr>
+                <tr>
+                    <td>HOME</td>
+                    <td>/root</td>
+                    <td>Home directory for credentials</td>
+                </tr>
+            </table>
+
+            <h3>Kiro CLI Configuration</h3>
+            <div class="info">
+                <p><strong>Authentication:</strong> kiro-cli login --use-device-flow</p>
+                <p><strong>Start URL:</strong> <your-aws-sso-url></p>
+                <p><strong>Region:</strong> Ireland</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📝 Summary</h2>
+            
+            <p>The BI DBT Portal is a three-tier architecture combining:</p>
+            <ul>
+                <li><strong>Nginx frontend</strong> for static content delivery and reverse proxy</li>
+                <li><strong>Flask backend</strong> for API logic and manifest processing</li>
+                <li><strong>Kiro CLI proxy</strong> for AI-powered analysis</li>
+            </ul>
+            
+            <p style="margin-top: 15px;">The system provides a secure, read-only interface for exploring DBT projects with intelligent chat assistance, formatted responses in Hebrew, and comprehensive search capabilities.</p>
+            
+            <div class="info" style="margin-top: 20px;">
+                <strong>Key Strengths:</strong>
+                <ul>
+                    <li>Containerized deployment for easy setup</li>
+                    <li>Security-first design with read-only access</li>
+                    <li>Intelligent manifest chunking for large files</li>
+                    <li>Conversation context preservation</li>
+                    <li>Hebrew language support with RTL layout</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer style="background: #333; color: white; text-align: center; padding: 20px; margin-top: 40px;">
+        <p>BI DBT Portal Documentation | Generated February 15, 2026</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">Justice Ministry BI Team - Internal Use Only</p>
+    </footer>
+</body>
+</html>
