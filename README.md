@@ -104,4 +104,5 @@ python3 kiro_sessions/kiro_proxy.py
 
 ## License
 
-Internal use only - Justice Ministry BI Team
+Matan Wieder:)
+
